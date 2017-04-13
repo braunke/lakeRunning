@@ -1,0 +1,37 @@
+<h1>{{lake.name}}</h1>
+<a href="/">Home</a>
+<div class="lakeRun">
+
+    <h3>Lake Records</h3>
+
+
+    <form class="delete_form" action="/deleteLake" method ="POST">
+        <input type ="hidden" name = "_id" value="{{bird._id}}">
+        <input class="delete_button" type="submit" name="delete" value="Delete">
+    </form>
+
+    <!--shows date and times array as unordered list-->
+    <p>Dates and times of lake runs:</p>
+    <ul>
+        {{#each lake.runs}}
+            <li>
+                {{dateFormatter this.date}} ---- {{this.time}}
+            </li>
+            <!--only showing one date since probably only care about your time zone running dates-->
+        {{else}}
+            <li>No sightings reported</li>
+        {{/each}}
+    </ul>
+
+    <P>Add new date</P>
+    <!--code to add new date for each bird-->
+    <form action="/addDate" method="POST">
+        <input name="dateSeen" type="datetime-local" required>
+        <input name="time" type="number" required>
+        <input name="_id" type="hidden" value="{{lake._id}}">
+        <input name="name" type="hidden" value="{{lake.name}}">
+        <input name="add" type="submit" value="Add new date">
+    </form>
+
+    <hr>
+</div>

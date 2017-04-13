@@ -24,10 +24,12 @@ router.post('/', function(req, res, next){
             lakeData[field] = req.body[field];
         }
     }
-    var date = lakeData.dateSeen || Date.now();
-    lakeData.datesSeen = [ date ];
+    var date = {date: req.body.dateSeen,
+               time: req.body.time}
+    lakeData.runs = [ date ];
     delete(lakeData.dateSeen);
-
+    delete(lakeData.time);
+    var lake = Lake(lakeData);  //Create new Lake from req.body
     lake.save(function(err, newlake){
 
         if (err) {
@@ -53,9 +55,9 @@ router.post('/', function(req, res, next){
     })
 });
 router.post('/addDate', function(req, res, next){
-
-    if (!req.body.dateSeen) {
-        req.flash('error', 'Please provide a date for your sighting of ' + req.body.name);
+//checks to make sure both date and time are entered
+    if (!req.body.dateSeen || !req.body.time) {
+        req.flash('error', 'Please provide a date and time for your new run ' + req.body.name);
         return res.redirect('/');
     }
 
@@ -73,14 +75,18 @@ router.post('/addDate', function(req, res, next){
 
 
 
-        lake.datesSeen.push(req.body.dateSeen);  // Add new date to datesSeen array
+        var run = {
+            date: req.body.dateSeen,
+            time: req.body.time
+        };
+        lake.runs.push(run);  // Add new date to runs array
 
 
 
         // And sort datesSeen
-        lake.datesSeen.sort(function(a, b) {
-            if (a.getTime() < b.getTime()) { return 1;  }
-            if (a.getTime() > b.getTime()) { return -1; }
+        lake.runs.sort(function(a, b) {
+            if (a.time  < b.time) { return 1;  }
+            if (a.time > b.time) { return -1; }
             return 0;
         });
         lake.save(function(err){
@@ -112,7 +118,19 @@ router.post('/deleteLake', function(req, res, next){
         return res.redirect('/')
     })
 });
+//separate page for each lake
+router.get('/details/:id', function(req, res, next) {
+    Lake.findById( req.params.id, function(err, lake) {
+        if (err) {
+            return next(err);  // 500 error
+        }
+        if (!lake) {
+            return next();  // Creates a 404 error
+        }
 
+        res.render('lakeDetails', { lake: lake } );
+    });
+});
 
 
 

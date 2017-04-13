@@ -2,7 +2,7 @@
 
 <div class="addNewSighting">
 
-    <h3>Add new run</h3>
+    <h3>Add new lake</h3>
 
     <div class="messages">
         {{#each messages.error}}
@@ -15,53 +15,27 @@
         <br>
         Date of run: <input name="dateSeen" type="datetime-local">
         <br>
-        Run time: <input name="time" type=text">
-        <input name="addBird" type="submit" value="Add new sighting">
+        Run time in seconds: <input name="time" type=text" required>
+        <br>
+        <input name="addlake" type="submit" value="Add new lake">
 
     </form>
 
 </div>
 
-<div class="birdsSeen">
+<div class="Lakes">
 
     <h3>All Lakes</h3>
+<ul>
+    {{# each lakes}}
+        <li>
+            <a href="/details/{{this._id}}">{{this.name}}</a>
+        </li>
 
-    {{# each birds}}
-        <p>Name of lake: {{this.name}}</p>
-        <p>Time: {{this.time}}</p>
-        <!--shows date array as unordered list-->
-        <p>Dates and times of lake runs:</p>
-        <ul>
-            <li>{{this.time}}</li>
-            {{#each this.datesSeen}}
-                <li>
-                    {{dateFormatter this}}
-                </li>
-
-            {{else}}
-                <li>No sightings reported</li>
-            {{/each}}
-        </ul>
-        <form class="delete_form" action="/deleteBird" method ="POST">
-            <input type ="hidden" name = "_id" value="{{this._id}}">
-            <input class="delete_button" type="submit" name="delete" value="Delete">
-        </form>
-
-        <P>Add new date and time</P>
-        <!--code to add new date for each bird-->
-        <form action="/addDate" method="POST">
-            <input name="dateSeen" type="datetime-local" required>
-            <input name="time" type="text">
-            <input name="_id" type="hidden" value="{{this._id}}">
-            <input name="name" type="hidden" value="{{this.name}}">
-            <input name="add" type="submit" value="Add new date">
-        </form>
-
-        <hr>
 
     {{else}}
         <p>No lake records in the database</p>
     {{/each}}
+</ul>
 </div>
-
 
